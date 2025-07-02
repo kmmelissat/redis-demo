@@ -22,7 +22,7 @@ import { MoviesModule } from './movies/movies.module';
         host: configService.get('DB_HOST', 'localhost'),
         port: configService.get('DB_PORT', 5432),
         username: configService.get('DB_USERNAME', 'postgres'),
-        password: configService.get('DB_PASSWORD', 'password'),
+        password: configService.get('DB_PASSWORD', 'suser'),
         database: configService.get('DB_DATABASE', 'redis'),
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
         synchronize: configService.get('NODE_ENV') !== 'production',
