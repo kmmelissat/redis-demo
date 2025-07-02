@@ -1,26 +1,42 @@
 import { Injectable } from '@nestjs/common';
-import { CreateMovieDto } from './dto/create-movie.dto';
-import { UpdateMovieDto } from './dto/update-movie.dto';
+import { HttpService } from '@nestjs/axios';
+import { RedisService } from './redis.service';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable()
-export class MoviesService {
-  create(createMovieDto: CreateMovieDto) {
-    return 'This action adds a new movie';
-  }
+export class PeliculasService {
+  private readonly TMDB_API_KEY = 'tu_api_key_aqui';
+  private readonly TMDB_BASE_URL = 'https://api.themoviedb.org/3';
 
-  findAll() {
-    return `This action returns all movies`;
-  }
+  constructor(
+    private readonly httpService: HttpService,
+    private readonly redisService: RedisService,
+  ) {}
 
-  findOne(id: number) {
-    return `This action returns a #${id} movie`;
-  }
+  async getPeliculasPorAño(año: string) {
+    
+    const cacheKey = `peliculas_${año}`;
 
-  update(id: number, updateMovieDto: UpdateMovieDto) {
-    return `This action updates a #${id} movie`;
-  }
+    
+    const cachedData = await this.redisService.get(cacheKey);
+    if (cachedData) {
+      return {
+        source: 'cache',
+        data: JSON.parse(cachedData),
+      };
+    }
 
-  remove(id: number) {
-    return `This action removes a #${id} movie`;
+    
+    const url = `${this.TMDB_BASE_URL}/discover/movie?api_key=${this.TMDB_API_KEY}&primary_release_year=${año}`;
+    const response = await firstValueFrom(this.httpService.get(url));
+    const peliculas = response.data.results;
+
+    
+    await this.redisService.setEx(cacheKey, 30, JSON.stringify(peliculas));
+
+    return {
+      source: 'api',
+      data: peliculas,
+    };
   }
 }
