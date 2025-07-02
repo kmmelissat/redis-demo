@@ -20,7 +20,7 @@ import { ProductsModule } from './products/products.module';
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
         host: configService.get('DB_HOST', 'localhost'),
-        port: configService.get('DB_PORT', 5433),
+        port: configService.get('DB_PORT', 5432),
         username: configService.get('DB_USERNAME', 'postgres'),
         password: configService.get('DB_PASSWORD', 'suser'),
         database: configService.get('DB_DATABASE', 'redis'),
