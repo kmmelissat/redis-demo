@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { PeliculasService } from './movies.service';
 
 
@@ -7,7 +7,7 @@ export class PeliculasController {
   constructor(private readonly peliculasService: PeliculasService) {}
 
   @Get(':año')
-  async getPeliculasPorAño(@Param('año') año: string) {
-    return await this.peliculasService.getPeliculasPorAño(año);
+  async getPeliculasPorAño(@Query('año') año: string, @Query('q') q: string ) {
+    return this.peliculasService.getPeliculasPorAño(año, q);
   }
 }

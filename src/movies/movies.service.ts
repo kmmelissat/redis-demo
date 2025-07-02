@@ -5,19 +5,17 @@ import { firstValueFrom } from 'rxjs';
 
 @Injectable()
 export class PeliculasService {
-  private readonly TMDB_API_KEY = 'tu_api_key_aqui';
-  private readonly TMDB_BASE_URL = 'https://api.themoviedb.org/3';
+  private readonly OMDB_API_KEY = '62c4e084';
+  private readonly OMDB_BASE_URL = 'http://www.omdbapi.com/';
 
   constructor(
     private readonly httpService: HttpService,
     private readonly redisService: RedisService,
   ) {}
 
-  async getPeliculasPorAño(año: string) {
-    
-    const cacheKey = `peliculas_${año}`;
+  async getPeliculasPorAño(año: string, query: string = 'movie') {
+    const cacheKey = `peliculas_${año}_${query}`;
 
-    
     const cachedData = await this.redisService.get(cacheKey);
     if (cachedData) {
       return {
@@ -26,13 +24,12 @@ export class PeliculasService {
       };
     }
 
-    
-    const url = `${this.TMDB_BASE_URL}/discover/movie?api_key=${this.TMDB_API_KEY}&primary_release_year=${año}`;
-    const response = await firstValueFrom(this.httpService.get(url));
-    const peliculas = response.data.results;
+    const url = `${this.OMDB_BASE_URL}?apikey=${this.OMDB_API_KEY}&s=${query}&y=${año}&type=movie`;
 
-    
-    await this.redisService.setEx(cacheKey, 30, JSON.stringify(peliculas));
+    const response = await firstValueFrom(this.httpService.get(url));
+    const peliculas = response.data.Search || [];
+
+    await this.redisService.setEx(cacheKey, 60, JSON.stringify(peliculas));
 
     return {
       source: 'api',
