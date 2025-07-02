@@ -18,6 +18,6 @@ export class CacheService implements OnModuleInit {
   }
 
   async set(key: string, value: any, ttlSeconds: number): Promise<void> {
-    await this.client.set(key, JSON.stringify(value), { EX: ttlSeconds });
+    await this.client.setEx(key, ttlSeconds, JSON.stringify(value));
   }
 }

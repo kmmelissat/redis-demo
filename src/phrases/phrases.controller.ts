@@ -12,6 +12,11 @@ export class PhrasesController {
     return this.phrasesService.create(createPhraseDto);
   }
 
+  @Get('motivacionales')
+  async getMotivationalPhrases() {
+    return await this.phrasesService.getMotivationalPhrases();
+  }
+
   @Get()
   findAll() {
     return this.phrasesService.findAll();
