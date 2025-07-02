@@ -7,8 +7,8 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CacheService } from './cache.service';
 import { ProductsModule } from './products/products.module';
-import { PhrasesModule } from './phrases/phrases.module';
-import { MoviesModule } from './movies/movies.module';
+// import { PhrasesModule } from './phrases/phrases.module';
+// import { MoviesModule } from './movies/movies.module';
 
 @Module({
   imports: [
@@ -44,8 +44,8 @@ import { MoviesModule } from './movies/movies.module';
       inject: [ConfigService],
     }),
     ProductsModule,
-    PhrasesModule,
-    MoviesModule,
+    // PhrasesModule,
+    // MoviesModule,
   ],
   controllers: [AppController],
   providers: [AppService, CacheService],
