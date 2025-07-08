@@ -8,10 +8,13 @@ import { AppService } from './app.service';
 import { CacheService } from './cache.service';
 import { ProductsModule } from './products/products.module';
 import { PhrasesModule } from './phrases/phrases.module';
-import { MoviesModule } from './movies/movies.module';
+import { HttpModule } from '@nestjs/axios';
+import { PeliculasModule } from "src/movies/movies.module";
 
 @Module({
   imports: [
+    HttpModule,
+    PeliculasModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),
@@ -45,7 +48,7 @@ import { MoviesModule } from './movies/movies.module';
     }),
     ProductsModule,
     PhrasesModule,
-    MoviesModule,
+    PeliculasModule,
   ],
   controllers: [AppController],
   providers: [AppService, CacheService],
