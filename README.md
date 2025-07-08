@@ -1,98 +1,171 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Redis Demo API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Una API REST desarrollada con NestJS que demuestra diferentes estrategias de caché usando Redis.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 🚀 Funcionalidades
 
-## Description
+### 1. **Caché en Memoria - Frases Motivacionales**
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- **Endpoint**: `GET /phrases/motivacionales`
+- **Caché**: 15 segundos
+- **Simulación**: Primera llamada tarda 3 segundos (operación costosa)
 
-## Project setup
+### 2. **Caché Dinámico por Parámetro - Películas por Año**
 
-```bash
-$ yarn install
-```
+- **Endpoint**: `GET /peliculas/:año`
+- **Caché**: 30 segundos por año
+- **Fuente**: API externa OMDb
+- **Ejemplo**: `/peliculas/2020`, `/peliculas/2019`
 
-## Compile and run the project
+### 3. **Caché desde PostgreSQL - Productos**
 
-```bash
-# development
-$ yarn run start
+- **Endpoint**: `GET /products`
+- **Caché**: 20 segundos
+- **Base de datos**: PostgreSQL con 1,000+ registros
+- **Seed**: `POST /products/seed` (genera datos de prueba)
 
-# watch mode
-$ yarn run start:dev
+## 📋 Requisitos
 
-# production mode
-$ yarn run start:prod
-```
+- Node.js 18+
+- PostgreSQL
+- Redis Server
 
-## Run tests
+## ⚡ Instalación Rápida
 
 ```bash
-# unit tests
-$ yarn run test
+# 1. Clonar e instalar dependencias
+npm install
 
-# e2e tests
-$ yarn run test:e2e
+# 2. Configurar variables de entorno
+cp .env.example .env
 
-# test coverage
-$ yarn run test:cov
+# 3. Iniciar servicios
+brew services start postgresql@17
+brew services start redis
+
+# 4. Crear base de datos
+createdb redis_demo
+
+# 5. Iniciar aplicación
+npm run start:dev
 ```
 
-## Deployment
+## 🛠️ Configuración
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+### Variables de Entorno (.env)
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+```env
+DB_HOST=localhost
+DB_PORT=5432
+DB_USERNAME=postgres
+DB_PASSWORD=postgres
+DB_NAME=redis_demo
+```
+
+## 📡 Endpoints
+
+### Frases Motivacionales
 
 ```bash
-$ yarn install -g @nestjs/mau
-$ mau deploy
+# Primera llamada (lenta)
+curl http://localhost:4000/phrases/motivacionales
+
+# Segunda llamada (rápida - desde caché)
+curl http://localhost:4000/phrases/motivacionales
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### Películas por Año
 
-## Resources
+```bash
+# Películas del 2020
+curl http://localhost:4000/peliculas/2020
 
-Check out a few resources that may come in handy when working with NestJS:
+# Películas del 2019
+curl http://localhost:4000/peliculas/2019
+```
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+### Productos
 
-## Support
+```bash
+# Generar datos de prueba (1,000 productos)
+curl -X POST http://localhost:4000/products/seed
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+# Listar productos (con caché)
+curl http://localhost:4000/products
+```
 
-## Stay in touch
+## 📊 Ejemplo de Respuestas
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+### Frases (desde caché)
 
-## License
+```json
+[
+  "El éxito es la suma de pequeños esfuerzos repetidos día tras día.",
+  "La motivación nos impulsa a comenzar y el hábito nos permite continuar.",
+  "No cuentes los días, haz que los días cuenten."
+]
+```
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+### Películas
+
+```json
+{
+  "source": "cache",
+  "year": "2020",
+  "data": [
+    {
+      "Title": "Love and Monsters",
+      "Year": "2020",
+      "imdbID": "tt2222042",
+      "Type": "movie"
+    }
+  ]
+}
+```
+
+### Productos
+
+```json
+{
+  "source": "database",
+  "data": [
+    {
+      "id": 1,
+      "name": "Ultimate Beauty Product 1",
+      "price": "822.50",
+      "createdAt": "2025-07-08T04:45:32.807Z"
+    }
+  ],
+  "fetched_at": "2025-07-08T04:48:26.767Z"
+}
+```
+
+## ⚙️ Tecnologías
+
+- **Framework**: NestJS
+- **Base de datos**: PostgreSQL + TypeORM
+- **Caché**: Redis
+- **API externa**: OMDb API
+- **Lenguaje**: TypeScript
+
+## 🔍 Verificar Caché
+
+```bash
+# Ver claves en Redis
+redis-cli keys "*"
+
+# Ver TTL de una clave
+redis-cli ttl products_all
+
+# Ver contenido de una clave
+redis-cli get motivational_phrases
+```
+
+## 📈 Beneficios del Caché
+
+- **Rendimiento**: Respuestas hasta 50% más rápidas
+- **Escalabilidad**: Menos carga en la base de datos
+- **Experiencia de usuario**: Tiempos de respuesta consistentes
+- **Eficiencia**: Reducción de llamadas a APIs externas
+
+---
